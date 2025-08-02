@@ -17,19 +17,25 @@ import (
 )
 
 type cliArgs struct {
-	VideoPath string  `arg:"" help:"Path to the video file" type:"path"`
-	Output    string  `short:"o" help:"Output video file path (default: adds suffix to input)"`
-	Embed     bool    `help:"Embed subtitles into video"`
-	Hardcode  bool    `help:"Hardcode subtitles into video instead of soft embedding"`
-	Speed     float64 `help:"Audio speed-up factor for transcription (reduces costs)" default:"2.5"`
-	APIKey    string  `env:"OPENAI_API_KEY" help:"OpenAI API key" required:"true"`
-	Debug     bool    `help:"Enable debug logging"`
+	VideoPath string           `arg:"" help:"Path to the video file" type:"path"`
+	Output    string           `short:"o" help:"Output video file path (default: adds suffix to input)"`
+	Embed     bool             `help:"Embed subtitles into video"`
+	Hardcode  bool             `help:"Hardcode subtitles into video instead of soft embedding"`
+	Speed     float64          `help:"Audio speed-up factor for transcription (reduces costs)" default:"2.5"`
+	APIKey    string           `env:"OPENAI_API_KEY" help:"OpenAI API key" required:"true"`
+	Debug     bool             `help:"Enable debug logging"`
+	Version   kong.VersionFlag `help:"Show version information"`
 }
 
 func main() {
 	var args cliArgs
-	cliCtx := kong.Parse(&args)
-	_ = cliCtx
+	_ = kong.Parse(
+		&args,
+		kong.Name("submyvid"),
+		kong.Description("Creates subtitles for videos using OpenAI Whisper"),
+		kong.UsageOnError(),
+		kong.Vars{"version": Version()},
+	)
 
 	// Set up logger with hh:mm:ss timestamps
 	level := zerolog.InfoLevel
